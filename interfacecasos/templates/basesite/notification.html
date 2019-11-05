@@ -1,0 +1,142 @@
+{% extends "basesite/base.html" %}
+{% load staticfiles %}
+
+{% block head %}
+
+  <!-- Favicon -->
+  <link href="{% static 'assets/img/brand/favicon.png' %} rel="icon" type="image/png">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+  <!-- Icons -->
+  <link href="{% static 'assets/vendor/nucleo/css/nucleo.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  <!-- Argon CSS -->
+  <link type="text/css" href="{% static 'assets/css/argon.css?v=1.1.0' %} rel="stylesheet">
+
+
+{% endblock head %}
+
+{% block title %} Notificações {% endblock title %}
+
+{% block content %}
+
+<section>
+<div class="container">
+  <div class="row justify-content-center">
+              <div class="col-lg-10">
+                <!-- Tabs with icons -->
+                
+                <div class="nav-wrapper">
+                  <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-icons-text" role="tablist">
+                    <li class="nav-item">
+                      <a onClick="javascript:ReloadNao()" class="nav-link mb-sm-3 mb-md-0 active" id="tabs-icons-text-1-tab" data-toggle="tab" href="#tabs-icons-text-1" role="tab" aria-controls="tabs-icons-text-1" aria-selected="false"><i class="ni ni-bell-55 mr-2"></i>Não Lidas</a>
+                    </li>
+                    <li class="nav-item">
+                      <a onClick="javascript:ReloadSim()" class="nav-link mb-sm-3 mb-md-0" id="tabs-icons-text-2-tab" data-toggle="tab" href="#tabs-icons-text-2" role="tab" aria-controls="tabs-icons-text-2" aria-selected="false"><i class="ni ni-bell-55 mr-2"></i>Lidas</a>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div class="card shadow">
+                  
+                  <div class="card-body">
+                    
+                    <div class="tab-content" id="myTabContent">
+                        
+                      <div class="line-separator"></div>
+                      <!-- Não Lidas -->
+                      <br>
+                      
+                      {% for notification in notifications %}
+
+                        {% if notification.read == True %}
+
+                        <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
+                            <p>
+                              <b>{{ notification.requester.username }}</b> deseja te ajudar! | Funcionalidade: <b>{{ notification.feature.name }}</b>
+                              {% if notification.pending %}
+                                <button onClick="javascript:Recusar({{ notification.id}})" type="button" class="btn btn-danger btn-rounded btn-sm" style="float: right;" >Recusar</button>
+                                <button onClick="javascript:Aceitar({{ notification.id }})" type="button" class="btn btn-success btn-rounded btn-sm" style="float: right;" >Aceitar</button>
+                              {% endif %}
+                            </p>
+                            <div class="line-separator"></div>
+                            <br>
+                        </div>
+
+                        {% else %}
+
+                        <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">
+                            <p>
+                              <b>{{ notification.requester.username }}</b> deseja te ajudar! | Funcionalidade: <b>{{ notification.feature.name }}</b>
+                              
+                              <button onClick="javascript:Recusar({{ notification.id}})" type="button" class="btn btn-danger btn-rounded btn-sm" style="float: right;" >Recusar</button>
+                              <button onClick="javascript:Aceitar({{ notification.id }})" type="button" class="btn btn-success btn-rounded btn-sm" style="float: right;" >Aceitar</button>
+                            </p>
+                            
+                            <div class="line-separator"></div>
+                            <br>
+                        </div>
+
+                        
+                        {% endif %}
+                      {% endfor %}
+     
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+</div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+  
+  function ReloadSim(){
+    $('#tabs-icons-text-2-tab').removeClass('nav-link mb-sm-3 mb-md-0').addClass('nav-link mb-sm-3 mb-md-0 active');
+    $('#tabs-icons-text-1-tab').removeClass('nav-link mb-sm-3 mb-md-0 active').addClass('nav-link mb-sm-3 mb-md-0');
+    $('#tabs-icons-text-2').removeClass('tab-pane fade').addClass('tab-pane fade show active');
+    $('#tabs-icons-text-1').removeClass('tab-pane fade show active').addClass('tab-pane fade');
+  }
+
+  function ReloadNao(){
+    $('#tabs-icons-text-1-tab').removeClass('nav-link mb-sm-3 mb-md-0').addClass('nav-link mb-sm-3 mb-md-0 active');
+    $('#tabs-icons-text-2-tab').removeClass('nav-link mb-sm-3 mb-md-0 active').addClass('nav-link mb-sm-3 mb-md-0');
+    $('#tabs-icons-text-2').removeClass('tab-pane fade show active').addClass('tab-pane fade');
+    $('#tabs-icons-text-1').removeClass('tab-pane fade').addClass('tab-pane fade show active');
+  }
+
+  function MarcaLido(id){
+    $.ajax({
+            url: "{% url 'marca' 1 %}".replace(/1/,id),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                history.go(0);
+            }
+        });
+  }
+  function Recusar(id){
+    MarcaLido(id);
+    history.go(0);
+  }
+
+  function Aceitar(id){
+    $.ajax({
+            url: "{% url 'aceitar' 1 %}".replace(/1/,id),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                history.go(0);
+            }
+        });
+  }
+</script>
+
+
+
+{% endblock script %}

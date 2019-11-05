@@ -1,0 +1,1 @@
+web: gunicorn testify.wsgi --log-file -web: gunicorn casosteste.wsgi --log-file -web: gunicorn casosteste.wsgi --log-file -

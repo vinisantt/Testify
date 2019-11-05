@@ -1,0 +1,193 @@
+{% extends 'basesite/base.html' %}
+{% load staticfiles %}
+
+{% block title %} Quadro Geral {% endblock title %}
+
+{% block inicio %} class="active" {% endblock inicio %}
+
+{% block content %}
+
+<section class="dashboard-counts no-padding-bottom">
+            <div class="container-fluid">
+              <div class="row bg-white has-shadow">
+                <!-- Item -->
+                <div class="col-xl-3 col-sm-6">
+                  <div class="item d-flex align-items-center">
+                    <div class="icon bg-green"><i class="icon-padnote"></i></div>
+                    <div class="title"><span>Func.<br>finalizadas</span>
+                      <div class="progress">
+                          <div role="progressbar" style="width: {{ percentM }}; height: 4px;"  class="progress-bar bg-violet"></div>
+                      </div>
+                    </div>
+                    <div class="number"><strong>{{casos_concluidos}}</strong></div>
+                  </div>
+                </div>
+                <!-- Item -->
+                <div class="col-xl-3 col-sm-6">
+                  <div class="item d-flex align-items-center">
+                    <div class="icon bg-green"><i class="icon-bill"></i></div>
+                    <div class="title"><span>Func.<br> atribuídas</span>
+                      <div class="progress">
+                        <div role="progressbar" style="width:{{percentA}}; height: 4px;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="40" class="progress-bar bg-blue  "></div>
+                        
+                      </div>
+                      
+                    </div>
+                    <div class="number"><strong>{{meus_casos}}</strong></div>
+                  </div>
+                </div>
+                <!-- Item -->
+                <div class="col-xl-3 col-sm-6">
+                  <div class="item d-flex align-items-center">
+                    <div class="icon bg-orange"><i class="icon-check"></i></div>
+                    <div class="title"><span>Func.<br>abertas</span>
+                      <div class="progress">
+                        <div role="progressbar" style="width:{{percentC}}; height: 4px;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" class="progress-bar bg-orange"></div>
+                      </div>
+                    </div>
+                    <div class="number"><strong>{{novos_casos}}</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Dashboard Header Section    -->
+          <section class="dashboard-header">
+            <div class="container-fluid">
+              <div class="row">
+                <!-- Statistics -->
+                
+                <!-- Line Chart            -->
+                <div class="chart col-lg-8 col-10">
+                  <div class="line-chart bg-white d-flex align-items-center justify-content-center has-shadow">
+                    <canvas id="lineCahrt"></canvas>
+                  </div>
+                </div>
+                <div class="chart col-lg-4 col-10">
+                  <!-- Bar Chart   -->
+                  <div class="bar-chart has-shadow bg-white">
+                    <div class="title"><strong class="text-violet">Membros da equipe online</strong></div>
+                    <div class="title">
+
+                      {% for user in users %}
+                        <strong class="text-black">
+                          &diams; {{ user.user }}
+                          
+                        </strong> <br>
+                      {% endfor %}
+                    </div>
+                    
+                  </div>
+                  
+                </div>
+              </div>
+              
+            </div>
+          </section>
+          
+
+{% endblock content %}
+
+{% block script %}
+
+    <script>
+          var dates = {{ dates|safe }};
+          var qtd_s = {{ qtd_s|safe }};
+          var qtd_a = {{ qtd_a|safe }};
+          
+          $(document).ready(function () {
+
+          'use strict';
+
+          // ------------------------------------------------------- //
+          // Line Chart
+          // ------------------------------------------------------ //
+          var legendState = true;
+          if ($(window).outerWidth() < 576) {
+              legendState = false;
+          }
+
+          
+          var LINECHART = $('#lineCahrt');
+          
+
+          var myLineChart = new Chart(LINECHART, {
+              type: 'line',
+              options: {
+                  scales: {
+                      xAxes: [{
+                          display: true,
+                          gridLines: {
+                              display: false
+                          }
+                      }],
+                      yAxes: [{
+                          display: true,
+                          gridLines: {
+                              display: false
+                          }
+                      }]
+                  },
+                  legend: {
+                      display: legendState
+                  }
+              },
+              data: {
+                  labels: dates,
+                  datasets: [
+                      {
+                          label: "Testes em aberto",
+                          fill: true,
+                          lineTension: 0,
+                          backgroundColor: "transparent",
+                          borderColor: '#f15765',
+                          pointBorderColor: '#da4c59',
+                          pointHoverBackgroundColor: '#da4c59',
+                          borderCapStyle: 'butt',
+                          borderDash: [],
+                          borderDashOffset: 0.0,
+                          borderJoinStyle: 'miter',
+                          borderWidth: 1,
+                          pointBackgroundColor: "#fff",
+                          pointBorderWidth: 1,
+                          pointHoverRadius: 5,
+                          pointHoverBorderColor: "#fff",
+                          pointHoverBorderWidth: 2,
+                          pointRadius: 1,
+                          pointHitRadius: 0,
+                          data: qtd_a,
+                          spanGaps: false
+                      },
+                      {
+                          label: "Testes concluídos",
+                          fill: true,
+                          lineTension: 0,
+                          backgroundColor: "transparent",
+                          borderColor: "#54e69d",
+                          pointHoverBackgroundColor: "#44c384",
+                          borderCapStyle: 'butt',
+                          borderDash: [],
+                          borderDashOffset: 0.0,
+                          borderJoinStyle: 'miter',
+                          borderWidth: 1,
+                          pointBorderColor: "#44c384",
+                          pointBackgroundColor: "#fff",
+                          pointBorderWidth: 1,
+                          pointHoverRadius: 5,
+                          pointHoverBorderColor: "#fff",
+                          pointHoverBorderWidth: 2,
+                          pointRadius: 1,
+                          pointHitRadius: 10,
+                          data: qtd_s,
+                          spanGaps: false
+                      }
+                  ]
+              }
+          });
+        });
+    </script>
+    <script src="{% static "vendor/chart.js/Chart.min.js" %}"></script>
+    <script src="{% static "js/charts-home.js" %}" ></script>
+    
+
+{% endblock script %}

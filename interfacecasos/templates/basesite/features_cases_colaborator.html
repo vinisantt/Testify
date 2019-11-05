@@ -1,0 +1,127 @@
+{% extends 'basesite/base.html' %}
+
+{% block title %} Colaborando {% endblock title %}
+
+{% block colaborator %} class="active"  {% endblock colaborator %}
+
+{% block content %}
+
+
+<section class="dashboard-counts no-padding-bottom" id="teste">
+    
+    <div class="container mt-3">
+    
+
+        <ul class="list-group">
+        
+        {% for feature in features %}
+            <li class="list-group-item d-flex justify-content-between align-items-center rounded">
+               <div class="media p-3">
+                    <div class="media-body">
+                        <h4> #{{ feature.0.name}}</h4>
+                        <p>Data de criação: <b> {{ feature.0.date.day }}/{{ feature.0.date.month }}/{{ feature.0.date.year }}</b><br> 
+                           Status: <b> {% if feature.0.is_finished %} Finalizado {% else %} Não finalizada {% endif %} </b><br>
+                           Autor: <b> {{ feature.0.author.nome }} </b><br>
+                           Colaborador(es): 
+                            {% for i in feature.0.colaborator.all %}
+                                {% if i.nome == profile_nome %}
+                                    <b> Você </b>,
+                                {% else %}
+                                    <b>{{ i.nome }}</b>,
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        
+                    </div>
+                </div>
+            
+                <span class="{{ feature.1|safe }}" >Data de entrega:<br>{{ feature.0.date_to_finish.day }} / {{ feature.0.date_to_finish.month }} / {{ feature.0.date_to_finish.year }} <br></span>
+                                
+                <div id="header-content">
+                
+                <a class="btn btn-primary btn-sm" href="{% url 'cases_colaborator' feature.0.num_feature %}" role="button">Visualizar</a>
+                
+                </div>
+            </li>
+            <br>
+        {% endfor %}
+            
+        </ul>
+    </div>
+</section>
+
+<script>
+
+        function Finaliza(num_feature){
+    
+            $.ajax({
+                url: "{% url 'solve' 1 %}".replace(/1/,num_feature),
+                data: {},
+                dataType: 'json',
+    
+                success: function(data){
+                    
+                    if(data['response'] == 'False'){
+    
+                        $("#teste").append('\
+                            <!-- Modal -->\
+                            <div id = "modalFalse" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                                <div class="modal-dialog modal-dialog-centered" role="document">\
+                                    <div class="modal-content">\
+                                    <div class="modal-header">\
+                                        <h5 class="modal-title" id="TituloModalCentralizado">Ooops</h5>\
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">\
+                                        <span aria-hidden="true">&times;</span>\
+                                        </button>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        Funcionalidade não finalizada devido a quantidade mínima de casos não ter sido atingida!\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                    </div>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                        \
+                        ')
+    
+                        $("#modalFalse").modal('show')
+                    }
+                    else{
+                        $("#teste").append('\
+                            <!-- Modal -->\
+                            <div id = "modalTrue" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                                <div class="modal-dialog modal-dialog-centered" role="document">\
+                                    <div class="modal-content">\
+                                    <div class="modal-header">\
+                                        <h5 class="modal-title" id="TituloModalCentralizado">Missão cumprida</h5>\
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">\
+                                        <span aria-hidden="true">&times;</span>\
+                                        </button>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        Funcionalidade finalizada com sucesso!\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                    <button id = "fecharModal" onClick="javascript:Reload();" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>\
+                                    </div>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                        \
+                        ')
+                        $("#modalTrue").modal('show')
+                    }        
+                }
+            });
+        }
+        
+    
+        function Reload(){
+            history.go(0);
+        }
+    
+</script>
+
+
+{% endblock content %}

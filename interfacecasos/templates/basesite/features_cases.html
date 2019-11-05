@@ -1,0 +1,191 @@
+{% extends 'basesite/base.html' %}
+
+{% block title %} Funcionalidades {% endblock title %}
+
+{% block casos_abertos %} class="active"  {% endblock casos_abertos %}
+
+{% block content %}
+
+
+<section class="dashboard-counts no-padding-bottom" id='teste'>
+    
+    <div class="container mt-3">
+        <ul class="list-group">
+        
+        {% for feature in features %}
+            <li class="list-group-item d-flex justify-content-between align-items-center rounded">
+               <div class="media p-3">
+                    <div class="media-body">
+                        <h4> #{{ feature.0.name}}</h4>
+                        <p>Data de criação: <b> {{ feature.0.date.day }}/{{ feature.0.date.month }}/{{ feature.0.date.year }}</b><br> 
+                           Status: <b> {% if feature.0.is_finished %} Finalizado {% else %} Não finalizada {% endif %}</b><br>Quantidade de casos:<b> {{ feature.3 }}</b><br>Responsável:<b>{{ feature.0.author.nome }}</b>
+                        </p>
+                        
+                    </div>
+                </div>
+            
+                <span class="{{ feature.1|safe }}" >Data de entrega:<br>{{ feature.0.date_to_finish.day }} / {{ feature.0.date_to_finish.month }} / {{ feature.0.date_to_finish.year }} <br></span>
+                                
+                <div id="header-content">
+                {% if not feature.0.is_finished %}
+                   
+                    <a class="btn btn-primary btn-sm" href="{% url 'cases' feature.0.num_feature %}" role="button">Visualizar</a>
+                    {% if  feature.2 %}
+                        {% if feature.4 %}
+                            {% if feature.5 %}
+                                <button type="button" class="btn btn-primary btn-sm"  disabled>Colaborador</a>
+                            {% else %}
+                                <button type="button" class="btn btn-primary btn-sm"  disabled>Pendente</a> 
+                            {% endif %}
+                        {% else %}
+                            <a class="btn btn-primary btn-sm" onClick="javascript:Help({{ feature.0.num_feature }})" href="#" role="button">Ajudar</a>
+                        {% endif %}
+
+                    {% endif %}
+                    {% if not feature.2 %}
+                    <script>
+                        var num_feature = '{{ feature.0.num_feature }}'
+                    </script>
+                    <a id="finalizar" href="#" onClick="javascript:Finaliza({{ feature.0.num_feature }});" class="btn btn-success btn-sm" role="button">Finalizar</a>
+
+                    {% endif %}
+
+                {% endif %}
+                </div>
+            </li>
+            <br>
+        {% endfor %}
+            
+        </ul>
+    </div>
+</section>
+
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+
+    function Finaliza(num_feature){
+
+        $.ajax({
+            url: "{% url 'solve' 1 %}".replace(/1/,num_feature),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                
+                if(data['response'] == 'False'){
+
+                    $("#teste").append('\
+                        <!-- Modal -->\
+                        <div id = "modalFalse" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                            <div class="modal-dialog modal-dialog-centered" role="document">\
+                                <div class="modal-content">\
+                                <div class="modal-header">\
+                                    <h5 class="modal-title" id="TituloModalCentralizado">Ooooooops</h5>\
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">\
+                                    <span aria-hidden="true">&times;</span>\
+                                    </button>\
+                                </div>\
+                                <div class="modal-body">\
+                                    Esta funcionalidade não atingiu o número adequado de casos de teste! Deseja realmente finaliza-la?\
+                                </div>\
+                                <div class="modal-footer">\
+                                <button name="forcafinaliza" onClick="javascript:ForcaFinaliza(num_feature);" type="button" class="btn btn-secondary" data-dismiss="modal">Quero finalizar</button>\
+                                </div>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    \
+                    ')
+
+                    $("#modalFalse").modal('show')
+                }
+                else{
+                    $("#teste").append('\
+                        <!-- Modal -->\
+                        <div id = "modalTrue" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                            <div class="modal-dialog modal-dialog-centered" role="document">\
+                                <div class="modal-content">\
+                                <div class="modal-header">\
+                                    <h5 class="modal-title" id="TituloModalCentralizado">Missão cumprida</h5>\
+                                    <button type="button" class="close" onClick="javascript:Reload();" data-dismiss="modal" aria-label="Fechar">\
+                                    <span aria-hidden="true">&times;</span>\
+                                    </button>\
+                                </div>\
+                                <div class="modal-body">\
+                                    Funcionalidade finalizada com sucesso!\
+                                </div>\
+                                <div class="modal-footer">\
+                                <button id = "fecharModal" onClick="javascript:Reload();" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>\
+                                </div>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    \
+                    ')
+                    $("#modalTrue").modal('show')
+                }        
+            }
+        });
+    }
+    
+    function Help(num_feature){
+        $.ajax({
+            url: "{% url 'help_case' 1 %}".replace(/1/,num_feature),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                history.go(0);
+            }
+        });
+    }
+
+    function Reload(){
+        history.go(0);
+    }
+
+    function ForcaFinaliza(num_feature){
+
+        $.ajax({
+            url: "{% url 'force_solve' 1 %}".replace(/1/,num_feature),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                
+                    $("#teste").append('\
+                        <!-- Modal -->\
+                        <div id = "modalTrue" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                            <div class="modal-dialog modal-dialog-centered" role="document">\
+                                <div class="modal-content">\
+                                <div class="modal-header">\
+                                    <h5 class="modal-title" id="TituloModalCentralizado">Missão cumprida</h5>\
+                                    <button type="button" class="close" onClick="javascript:Reload();" data-dismiss="modal" aria-label="Fechar">\
+                                    <span aria-hidden="true">&times;</span>\
+                                    </button>\
+                                </div>\
+                                <div class="modal-body">\
+                                    Funcionalidade finalizada com sucesso!\
+                                </div>\
+                                <div class="modal-footer">\
+                                <button id = "fecharModal" onClick="javascript:Reload();" type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>\
+                                </div>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    \
+                    ')
+                    $("#modalTrue").modal('show')
+                        
+            }
+        });
+        }
+
+</script>
+
+
+{% endblock script %}

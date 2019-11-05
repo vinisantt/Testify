@@ -1,0 +1,43 @@
+{% extends 'basesite/base.html' %}
+
+{% block title %} Casos de Teste {% endblock title %}
+
+{% block colaborator %} class="active"  {% endblock colaborator %}
+
+{% block content %}
+
+
+<section class="dashboard-counts no-padding-bottom">
+
+    {% if not finished %}
+        <a><a name="colaborator" class="btn btn-primary btn-sm float-right" href="{% url 'feature_new_case' pk=pk tipo='colaborator' %}" role="button">Novo caso</a></a>
+    {% endif %}
+
+    <div class="container mt-3">
+        
+        <ul class="list-group">
+        
+
+        {% for case in cases %}
+            <li class="list-group-item d-flex justify-content-between align-items-center rounded">
+               <div class="media p-3">
+                    <div class="media-body">
+                        <h4> Caso de teste #{{ case.num_case}}</h4>
+                        <p>
+                            Nome: <b> {{ case.name }} </b><br>
+                            Componente a ser testado: <b> {{ case.component.nome_componente }}</b>
+                        </p>                 
+                    </div>
+                </div>                                
+                <div id="header-content">
+                    <a class="btn btn-primary btn-sm" href="{% url 'case_edit_colaborator'  feature=case.feature.num_feature pk=case.num_case  %}" role="button">Editar</a>
+                </div>
+            </li>
+            <br>
+        {% endfor %}      
+        </ul>
+    </div>
+</section>
+
+
+{% endblock content %}

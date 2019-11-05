@@ -1,0 +1,27 @@
+{% extends "basesite/base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block title %} Caso de teste #{{ case_number }} {% endblock title %}
+
+{% block content %}
+
+<section>
+
+    <form method="post">
+    
+        {% csrf_token %} 
+        
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    {{ form|crispy }}
+                </div>
+            <button type = "submit" class="btn btn-primary btn-sm" href={% url 'case_edit'  feature=case.feature.num_feature pk=case.num_case %} role="button">Salvar</button>
+            </div>
+        </div>
+    </form>
+
+</section>
+
+{% endblock content %}

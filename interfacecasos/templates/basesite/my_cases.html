@@ -1,0 +1,91 @@
+{% extends 'basesite/base.html' %}
+
+{% block title %} Meus Casos {% endblock title %}
+
+{% block meus_casos %} class="active"  {% endblock meus_casos %}
+
+{% block content %}
+
+
+<section class="dashboard-counts no-padding-bottom" id="my_cases">
+    
+    {% if not finished %}
+        <a><a class="btn btn-primary btn-sm float-right" href="{% url 'feature_new_case' pk=pk tipo='mycases' %}" role="button">Novo caso</a></a>
+    {% endif %}
+    <div class="container mt-3">
+        <ul class="list-group">
+
+        {% for case in cases %}
+            <li class="list-group-item d-flex justify-content-between align-items-center rounded">
+               <div class="media p-3">
+                    <div class="media-body">
+                        <h4> Caso de teste #{{ case.num_case}}</h4>
+                        <p>
+                            Nome: <b> {{ case.name }} </b><br>
+                            Componente a ser testado: <b> {{ case.component.nome_componente }} </b>
+
+                        </p>                 
+                    </div>
+                </div>                                
+                <div id="header-content">
+                    <a class="btn btn-primary btn-sm" href="{% url 'case_edit'  feature=case.feature.num_feature pk=case.num_case  %}" role="button">Editar</a>
+                    <a class="btn btn-danger btn-sm" onClick="javascript:Apagar({{ case.id }});" href="#" role="button">Apagar</a>
+                </div>
+            </li>
+            <br>
+        {% endfor %}      
+        </ul>
+    </div>
+</section>
+
+
+{% endblock content %}
+
+{% block script %}
+<script>
+
+    function Apagar(num_case){
+        
+        $.ajax({
+            url: "{% url 'delete' 1 %}".replace(/1/,num_case),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                
+                
+                $("#my_cases").append('\
+                    <!-- Modal -->\
+                    <div id = "modalApaga" class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">\
+                        <div class="modal-dialog modal-dialog-centered" role="document">\
+                            <div class="modal-content">\
+                            <div class="modal-header">\
+                                <h5 class="modal-title" id="TituloModalCentralizado">Pronto!</h5>\
+                                <button onClick="javascript:Reload()" type="button" class="close" data-dismiss="modal" aria-label="Fechar">\
+                                <span aria-hidden="true">&times;</span>\
+                                </button>\
+                            </div>\
+                            <div class="modal-body">\
+                                Caso apagado com sucesso!\
+                            </div>\
+                            <div class="modal-footer">\
+                            </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                \
+                ')
+
+                $("#modalApaga").modal('show')
+                        
+            }
+        });
+    }
+
+    function Reload(){
+        history.go(0);
+    }
+
+</script>
+
+{% endblock script %}

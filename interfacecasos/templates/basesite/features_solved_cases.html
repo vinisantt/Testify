@@ -1,0 +1,62 @@
+{% extends 'basesite/base.html' %}
+{% load staticfiles %}
+
+{% block title %} Funcionalidades {% endblock title %}
+
+{% block casos_resolvidos %} class="active" {% endblock casos_resolvidos %}
+
+{% block content %}
+
+<section class="dashboard-counts no-padding-bottom">
+    
+    <div class="container mt-3">
+        <ul class="list-group">
+
+        {% for feature in features %}
+            <li class="list-group-item d-flex justify-content-between align-items-center rounded">
+               <div class="media p-3">
+                    <div class="media-body">
+                        <h4>#{{ feature.0.name }}</h4>
+                        <p>Autor:<b> {{ feature.0.author.nome }}</b><br>Quantidade de casos:<b> {{ feature.1 }}</b></p>
+                    </div>
+                </div>
+            
+                <span class="badge3" >
+                    Data de conclusão:<br>{{ feature.0.date_finished.day }}/{{ feature.0.date_finished.month }}/{{ feature.0.date_finished.year }} 
+                <br>
+                </span>
+                                
+                
+                <div id="header-content">
+                    <a class="btn btn-primary btn-sm" href="{% url 'solved_cases' feature.0.num_feature %}" role="button">Visualizar</a>
+                    {% if feature.0.author.user == request.user %}
+                        <a class="btn btn-primary btn-sm" href="#" onclick="javascript:Reopen({{ feature.0.num_feature }})" role="button">Reabrir</a>
+                    {% endif %}
+                    
+                </div>
+            </li>
+            <br>
+        {% endfor %}
+            
+        </ul>
+    </div>
+</section>
+
+<script>
+    function Reopen(num_feature){
+        $.ajax({
+            url: "{% url 'reopen' 1 %}".replace(/1/,num_feature),
+            data: {},
+            dataType: 'json',
+
+            success: function(data){
+                history.go(0);
+            }
+        });
+    }
+
+
+</script>
+
+
+{% endblock content %}
