@@ -5,10 +5,10 @@ from django.utils import timezone
 
 def count():
     last_feature = Feature.objects.all().last()
-    last_num = last_feature.num_feature
-    if not last_num:
+    if not last_feature:
         return 1
     else:
+        last_num = last_feature.num_feature
         return int(last_num) + 1 
 
 def countNotification():
