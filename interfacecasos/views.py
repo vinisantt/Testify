@@ -66,10 +66,13 @@ def IndexView(request):
     qtd_concluidos = Feature.objects.filter(author__user=request.user, is_finished=True).count()
 
     dates = semanaAtual(dataAtual.today())
+    dates_brazil = []
+
     qtd_s = []
     qtd_a = []
 
     for date in dates:
+        dates_brazil.append(f"{date[8:10]}/{date[5:7]}/{date[:4]}")
         qtd_s.append(
             Feature.objects.filter(
                 is_finished=True,
@@ -97,7 +100,7 @@ def IndexView(request):
             'novos_casos':novas_features,
             'meus_casos':meus_casos,
             'users':see_users(),
-            'dates':dates,
+            'dates':dates_brazil,
             'qtd_a':qtd_a,
             'qtd_s':qtd_s
         }
@@ -124,7 +127,7 @@ def IndexView(request):
             'novos_casos':novas_features,
             'meus_casos':meus_casos,
             'users':see_users(),
-            'dates':dates,
+            'dates':dates_brazil,
             'qtd_a':qtd_a,
             'qtd_s':qtd_s
         }
