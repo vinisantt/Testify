@@ -188,7 +188,7 @@ def NewCase(request):
 def Cases(request,pk):
     profile_user = getProfile(request)
 
-    cases = Case.objects.filter(feature__num_feature = pk)
+    cases = Case.objects.filter(feature__num_feature = pk).order_by('num_case')
 
     if not cases:
         return render(request,'basesite/cases.html',{})
